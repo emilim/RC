@@ -20,7 +20,7 @@ phi = 2*np.pi*f*np.array(df['Fase_us'].values*1e-6)/(np.pi/2.) # norm to 1
 v_fs = np.array(df['Scala_V'].values)
 # phi_fs = 2*np.pi*f*np.array(data[5])*1e-6/(np.pi/2.)
 
-
+plt.hlines(1/np.sqrt(2), color='red', xmin=np.min(f), xmax=np.max(f), linestyles='--', label='1/sqrt(2)')
 plt.scatter(f, A, c='black', s=10, label='Data', zorder=2)
 plt.xscale('log')
 plt.xlabel('Frequenza [Hz]')
