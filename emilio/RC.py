@@ -25,8 +25,10 @@ V_errL = v_fs/10*0.41
 phi_errL = phi_fs/10*0.41*np.sqrt(2)
 A_err = np.sqrt((V_errL)**2 + (v_out*0.03*0.41)**2)
 
+sigma_A = A*np.sqrt((0.04*v_fs/v_in)**2 + (0.04*v_fs/v_out)**2)
+
 plt.hlines(1/np.sqrt(2), color='red', xmin=np.min(f), xmax=np.max(f), linestyles='--', label='1/sqrt(2)')
-plt.errorbar(f, A, yerr=A_err, fmt='o',ms=2,color='black')
+plt.errorbar(f, A, yerr=sigma_A, fmt='o',ms=2,color='black')
 plt.errorbar(f, phi, yerr=phi_errL, fmt='o',ms=2,color='green')
 plt.xscale('log')
 plt.xlabel('Frequenza [Hz]')
