@@ -38,12 +38,13 @@ plt.show()
 
 inizio= 12
 fine= 27
+
 f_lin=f[inizio: fine]
 phi_lin=phi[inizio: fine]
 A_lin=A[inizio: fine]
 s_A=np.sqrt((0.041*v_fs/v_in)**2+(0.04*v_fs/v_out)**2)
 s_A_lin=s_A[inizio: fine]
-s_phi_lin=5*1e-6*2*np.pi*f_lin/10*0.41*np.sqrt(2) 
+s_phi_lin=10*1e-6*2*np.pi*f_lin/10*0.41*np.sqrt(2) 
 
 
 def fitlin(x, m, q):
@@ -122,7 +123,7 @@ s_ft1=np.sqrt(sq1**2/(m1**2) + ((0.5-q1)**2/(np.pow(m1, 4))*sm1**2))
 print(f'fit lineare phi: y={m1}x+{q1}, sm={sm1} e sq={sq1}')
 print(f'freq_taglio={f_tlin1} +- {s_ft1}')
 
-bx1.scatter(f_tlin1, 0.5 , c='green', label='frequenza di taglio: ft=(5180+-100)Hz' )
+bx1.scatter(f_tlin1, 0.5 , c='green', label='frequenza di taglio: ft=(5500+-300)Hz' )
 bx1.errorbar(f_tlin1, 0.5, xerr=s_ft1, capsize= True)
 bx1.legend()
 
