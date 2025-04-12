@@ -1,4 +1,4 @@
-f_gen_KHz	Vin	Vout	Fase_us	Scala_V
+f_gen_KHz	Vin	Vout	Fase_us	Scala_V 
 0,551	7,6	7,56	25	1
 0,851	7,6	7,48	27,6	1
 1,131	7,6	7,4	28,8	1
