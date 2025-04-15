@@ -27,30 +27,26 @@ A_err = np.sqrt((V_errL)**2 + (v_out*0.03*0.41)**2)
 
 sigma_A = A*np.sqrt((0.04*v_fs/v_in)**2 + (0.04*v_fs/v_out)**2)
 
-fspace = np.linspace(min(f), max(f), 10000)
-def fitnonlinear(x, ft):
-    return 1/(np.sqrt(1 + (x/ft)**2))
+x = np.array([v_out[19], v_out[20]])
+y = np.array([phi[19]*90, phi[20]*90])
+def fit_func(x, a, b):
+    return a * x + b
+fit_params, covariance = curve_fit(fit_func, x, y)
+a, b = fit_params
+ft_ext = (45-b)/a
+ft_unc = np.abs(v_out[19] - ft_ext)/np.sqrt(3)
 
-params, pcov = curve_fit(fitnonlinear, f, A, p0=[5100], sigma=sigma_A)
-ft = params[0]
-err = np.sqrt(np.diag(pcov))
-print(f"ft={ft} +/- {err[0]}")
+print(f"Extrapolated ft value where V = 45: {ft_ext}")
+print(f"Uncertainty in ft: {ft_unc}")
 
-modello = fitnonlinear(fspace, ft)
-modello_ = fitnonlinear(fspace, ft+err[0])
-modello__ = fitnonlinear(fspace, ft-err[0])
-
-
-plt.hlines(1/np.sqrt(2), color='red', xmin=np.min(f), xmax=np.max(f), linestyles='--', label='1/sqrt(2)')
-plt.errorbar(f, A, yerr=sigma_A, fmt='o',ms=2,color='black')
-plt.errorbar(f, phi, yerr=phi_errL, fmt='o',ms=2,color='green')
-plt.plot(fspace, modello, label='Modello', color='blue')
-plt.fill_between(fspace, modello_, modello__, color='blue', alpha=0.2, label='Incertezza')
-plt.xscale('log')
-plt.xlabel('Frequenza [Hz]')
-plt.ylabel('A [V/V]')
-plt.title('Risposta circuito RC')
+plt.scatter(x, y, label='Data', color='black')
+plt.plot(x, fit_func(x, a, b), label='Fit', color='red')
+plt.vlines(ft_ext, phi[19]*90, phi[20]*90, color='blue', linestyle='--', label='Extrapolated line')
+plt.vlines(ft_ext+ft_unc, phi[19]*90, phi[20]*90, color='blue', linestyle='--')
+plt.vlines(ft_ext-ft_unc, phi[19]*90, phi[20]*90, color='blue', linestyle='--')
+plt.xlabel('X-axis label')
+plt.ylabel('Y-axis label')
+plt.title('Linear Fit Example')
 plt.grid()
 plt.legend()
-plt.tight_layout()
 plt.show()
