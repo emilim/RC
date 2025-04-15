@@ -44,7 +44,7 @@ phi_lin=phi[inizio: fine]
 A_lin=A[inizio: fine]
 s_A=np.sqrt((0.041*v_fs/v_in)**2+(0.04*v_fs/v_out)**2)
 s_A_lin=s_A[inizio: fine]
-s_phi_lin=10*1e-6*2*np.pi*f_lin/10*0.41*np.sqrt(2) 
+s_phi_lin=5*1e-6*2*np.pi*f_lin/10*0.41*np.sqrt(2) 
 
 
 def fitlin(x, m, q):
