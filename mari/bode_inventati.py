@@ -8,11 +8,9 @@ import matplotlib.colors as colors
 import multiprocessing.pool
 import pandas as pd
 
-inputname = 'dati.txt'
-inputname_i = 'dati_inventati.txt'
+inputname = 'dati_inventati.txt'
 
 df = pd.read_csv(inputname, delimiter='\t', decimal=',')
-df_i = pd.read_csv(inputname_i, delimiter='\t', decimal=',')
 
 f = np.array(df['f_gen_KHz'].values * 1e3)  # f in Hz
 v_in = np.array(df['Vin'].values)

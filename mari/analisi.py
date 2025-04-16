@@ -59,8 +59,8 @@ f_fit1=np.linspace(min(f_lin1), max(f_lin1), 13)
 A_fit=fitlin(f_fit, *popt)
 phi_fit=fitlin(f_fit1, *popt1)
 
-residui=A_lin-A_fit
-residui1=phi_lin-phi_fit
+residui=A_lin-fitlin(f_lin, *popt)
+residui1=phi_lin-fitlin(f_lin1, *popt1)
 err_param=np.sqrt(np.diag(ppcov))
 err_param1=np.sqrt(np.diag(ppcov1))
 chi=np.sum((residui/s_A_lin)**2)
