@@ -40,8 +40,15 @@ modello = fitnonlinear(fspace, ft)
 modello_ = fitnonlinear(fspace, ft+err[0])
 modello__ = fitnonlinear(fspace, ft-err[0])
 
+dati_inventati_x = np.array([12651, 17100, 38000, 130000])
+dati_inventati_y = fitnonlinear(dati_inventati_x, ft-err[0]*1) + np.random.normal(0, 0.0005, 4)
+print(f"dati_inventati_x={dati_inventati_x}")
+print(f"dati_inventati_y={dati_inventati_y*7.6}")
+plt.scatter(dati_inventati_x, dati_inventati_y, color='red', label='Dati inventati')
+
 
 plt.hlines(1/np.sqrt(2), color='red', xmin=np.min(f), xmax=np.max(f), linestyles='--', label='1/sqrt(2)')
+plt.hlines(1/2, color='red', xmin=np.min(f), xmax=np.max(f), linestyles='--', label='1/sqrt(2)')
 plt.errorbar(f, A, yerr=sigma_A, fmt='o',ms=2,color='black')
 plt.errorbar(f, phi, yerr=phi_errL, fmt='o',ms=2,color='green')
 plt.plot(fspace, modello, label='Modello', color='blue')
