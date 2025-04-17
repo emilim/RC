@@ -59,8 +59,8 @@ f_fit1=np.linspace(min(f_lin1), max(f_lin1), 13)
 A_fit=fitlin(f_fit, *popt)
 phi_fit=fitlin(f_fit1, *popt1)
 
-residui=A_lin-A_fit
-residui1=phi_lin-phi_fit
+residui=A_lin-fitlin(f_lin, *popt)
+residui1=phi_lin-fitlin(f_lin1, *popt1)
 err_param=np.sqrt(np.diag(ppcov))
 err_param1=np.sqrt(np.diag(ppcov1))
 chi=np.sum((residui/s_A_lin)**2)
@@ -92,7 +92,7 @@ print(f'fit lineare: y={m}x+{q}, sm={sm} e sq={sq}')
 print(f'freq_taglio={f_tlin} +- {s_ft}')
 
 ax1.scatter(f_tlin, 1/np.sqrt(2), c='green', label='frequenza di taglio: ft=(5180+-100)Hz' )
-ax1.errorbar(f_tlin, 1/np.sqrt(2), xerr=s_ft, capsize= True)
+ax1.errorbar(f_tlin, 1/np.sqrt(2), xerr=s_ft, capsize=5)
 ax1.legend()
 
 plt.tight_layout(pad=0.2)
@@ -161,9 +161,9 @@ cx2.axhline(0, c='yellow', linestyle='-')
 cx2.grid(True)
 
 cx1.scatter(f_tlin, 1/np.sqrt(2), c='green', label='da A: ft=(5180+-100)Hz' )
-cx1.errorbar(f_tlin, 1/np.sqrt(2), c='green', xerr=s_ft, capsize= True)
+cx1.errorbar(f_tlin, 1/np.sqrt(2), c='green', xerr=s_ft, capsize= 5)
 cx1.scatter(f_tlin1, 0.5 , c='red', label='da phi: ft=(5500+-300)Hz' )
-cx1.errorbar(f_tlin1, 0.5, c='red', xerr=s_ft1, capsize= True)
+cx1.errorbar(f_tlin1, 0.5, c='red', xerr=s_ft1, capsize= 5)
 cx1.legend()
 
 plt.tight_layout(pad=0.2)
