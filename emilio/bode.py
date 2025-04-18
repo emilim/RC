@@ -21,7 +21,7 @@ v_fs = np.array(df['Scala_V'].values)
 #phi_fs = 2*np.pi*f*np.array(df['Scala_us'].values)*1e-6/(np.pi/2.)
 Vin_errL = v_fs[0]/10*0.41
 V_errL = v_fs/10*0.41
-s_A=np.sqrt((0.041*v_fs/v_in)**2+(0.04*v_fs/v_out)**2) #3% per il cambio sonda ?????
+s_A=A*np.sqrt((0.041*v_fs/v_in)**2+(0.04*v_fs/v_out)**2) #3% per il cambio sonda ?????
 #primi 6 dati e ultimi 9 fatti con due sonde
 
 v_out_bode=v_out[35:43]
