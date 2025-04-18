@@ -82,9 +82,10 @@ ax1.set_xlabel(r'$\nu^2$ [Hz]')
 ax1.set_ylabel(r'$\tan(\Delta\phi)$ [rad]')
 
 ax2.errorbar(f, residui, yerr=err_dphi, fmt='o', color='green', label='Residui fit a un parametro')
-ax2.errorbar(f, residui2, yerr=err_dphi, fmt='o', color='blue', label='Residui fit a 2 parametri')
-ax2.axhline(0, c='red', linestyle='-')
+ax2.errorbar(f, residui2, yerr=err_dphi, fmt='o', color='red', label='Residui fit a 2 parametri')
+ax2.axhline(0, c='orange', linestyle='-')
 ax2.grid(True)
+ax2.legend()
 
 ax1.legend()
 plt.legend()
