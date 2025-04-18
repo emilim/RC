@@ -53,32 +53,41 @@ err_f_t_2 = m_2**(-2)*err_m2
 
 print(f"m_2={m_2} +/- {err_m2}")
 print(f"q_2={q_2} +/- {err_q2}")
+print("compat con 0: ", q_2/err_q2) 
 print(f"ft_2={f_t_2} +/- {err_f_t_2}")
 
 
 
+x_vis = np.linspace(min(f), max(f), 100)
 
-x_vis = np.linspace(min(f), max(f), 10000)
 y_vis = m*x_vis 
 residui = tan_dphi - (m*f)
-
 chi = np.sum((residui/err_dphi)**2)
-print(f"chi A={chi}")
+print(f"chi fit a un param={chi}")
+
+y_vis2 = m_2*x_vis + q_2
+residui2 = tan_dphi - (m_2*f + q_2)
+chi2 = np.sum((residui2/err_dphi)**2)
+print(f"chi fit a due param={chi2}")
 
 
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1]}, figsize=(8,6))
 
-ax1.errorbar(f, tan_dphi, yerr=err_dphi, fmt='o',ms=2,color='black')
-ax1.plot(x_vis, y_vis, label='Modello', color='blue')
-ax1.fill_between(x_vis, y_vis + err[0], y_vis - err[0], color='blue', alpha=0.2, label='Incertezza')
-#ax1.set_xscale('log')
-#ax1.set_yscale('log')
-ax1.set_xlabel('Frequenza^2 [Hz]')
-ax1.set_ylabel('A^-2 [V/V]')
+ax1.errorbar(f, tan_dphi, yerr=err_dphi, fmt='o',ms=6,color='blue')
+ax1.plot(x_vis, y_vis, label='Fit a un parametro: $f_t=$ {:.0f} $\pm$ {:.0f}'.format(f_t, err_f_t), color='green')
 
-ax2.errorbar(f, residui, yerr=err_dphi, fmt='o')
+ax1.plot(x_vis, y_vis2, label='Fit a due parametri: $f_t=$ {:.0f} $\pm$ {:.0f}'.format(f_t_2, err_f_t_2), color='red')
+
+ax1.set_xlabel(r'$\nu^2$ [Hz]')
+ax1.set_ylabel(r'$\tan(\Delta\phi)$ [rad]')
+
+ax2.errorbar(f, residui, yerr=err_dphi, fmt='o', color='green', label='Residui fit a un parametro')
+ax2.errorbar(f, residui2, yerr=err_dphi, fmt='o', color='blue', label='Residui fit a 2 parametri')
 ax2.axhline(0, c='red', linestyle='-')
 ax2.grid(True)
+
+ax1.legend()
+plt.legend()
 
 plt.tight_layout(pad=0.2)
 plt.show()
