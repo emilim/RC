@@ -24,10 +24,10 @@ V_errL = v_fs/10*0.41
 s_A=A*np.sqrt((0.041/v_in)**2+(0.041*v_fs/v_out)**2 + (3/100*v_in)**2 + (3/100*v_out)**2) #3% per il cambio sonda ?????
 #primi 6 dati e ultimi 9 fatti con due sonde
 
-v_out_bode=v_out[34:48]
-v_in_bode=v_in[34:48]
-f_bode=f[34:48]
-v_errL_bode=V_errL[34:48]
+v_out_bode=v_out[34:49]
+v_in_bode=v_in[34:49]
+f_bode=f[34:49]
+v_errL_bode=V_errL[34:49]
 print(f"freq={f_bode}")
 
 y=np.log10(v_out_bode/v_in_bode)
@@ -85,7 +85,7 @@ sft=np.pow(10,-b/a)*np.sqrt((sb/a)**2+ (b/(a**2)*sa)**2)
 f_taglio_=np.pow(10, q)
 sft_=np.pow(10, q)*np.log(10)*sq
 print(f'f_taglio={f_taglio}+-{sft}')
-print(f'f_taglio={f_taglio_}+-{sft_}')
+print(f'f_taglio 1 param={f_taglio_}+-{sft_}')
 
 ax1.scatter(np.log10(f_taglio), 0, c='orange', label='(2 param) ft=(4600+-400)Hz')
 #ax1.errorbar(np.log10(f_taglio), 0, xerr=np.log10(sft))
@@ -110,5 +110,6 @@ plt.xlabel('log10(f)[Hz]')
 plt.ylabel('log10(A)')
 plt.scatter(np.log10(877000), np.log10(0.096/7.6), c='red', label='dati anomali' )
 plt.scatter(np.log10(577000), np.log10(0.122/7.6), c='red')
+plt.scatter(np.log10(1177000), np.log10(0.078/7.6), c='red')
 plt.legend()
 plt.show()
