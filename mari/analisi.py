@@ -21,7 +21,8 @@ v_fs = np.array(df['Scala_V'].values)
 # phi_fs = 2*np.pi*f*np.array(data[5])*1e-6/(np.pi/2.)
 Vin_errL = v_fs[0]/10*0.41
 V_errL = v_fs/10*0.41
-s_A=np.sqrt((0.041*v_fs/v_in)**2+(0.04*v_fs/v_out)**2)
+#s_A=np.sqrt((0.041*v_fs/v_in)**2+(0.04*v_fs/v_out)**2)
+s_A=A*np.sqrt((1/(np.sqrt(3)*25)*v_fs/v_in)**2+(1/(np.sqrt(3)*25)*v_fs/v_out)**2)
 print(f"phi={phi}")
 
 plt.hlines(1/np.sqrt(2), color='red', xmin=np.min(f), xmax=np.max(f), linestyles='--', label='1/sqrt(2)')
@@ -86,12 +87,16 @@ ax2.grid(True)
 
 m, q= popt
 sm, sq = err_param
+
+sm_chi=np.sqrt(1/(np.sum(f_lin/(s_A_lin**2))))
+sq_chi=np.sqrt(1/(np.sum(1/s_A_lin**2)))
 f_tlin= (1/np.sqrt(2) - q)/m
 s_ft=np.sqrt(sq**2/(m**2) + ((1/np.sqrt(2)-q)**2/(np.pow(m, 4))*sm**2))
 print(f'fit lineare: y={m}x+{q}, sm={sm} e sq={sq}')
 print(f'freq_taglio={f_tlin} +- {s_ft}')
+print(f'incertezza parametri chi quadro:sm={sm_chi}, sq={sq_chi}')
 
-ax1.scatter(f_tlin, 1/np.sqrt(2), c='green', label='frequenza di taglio: ft=(5180+-100)Hz' )
+ax1.scatter(f_tlin, 1/np.sqrt(2), c='green', label='frequenza di taglio: ft=(5200+-100)Hz' )
 ax1.errorbar(f_tlin, 1/np.sqrt(2), xerr=s_ft, capsize=5)
 ax1.legend()
 
@@ -121,6 +126,9 @@ bx2.grid(True)
 
 m1, q1= popt1
 sm1, sq1 = err_param1
+
+sm_chi1=np.sqrt(1/(np.sum(f_lin1/(s_phi_lin**2))))
+sq_chi1=np.sqrt(1/(np.sum(1/s_phi_lin**2)))
 f_tlin1= (0.5 - q1)/m1
 s_ft1=np.sqrt(sq1**2/(m1**2) + ((0.5-q1)**2/(np.pow(m1, 4))*sm1**2))
 print(f'fit lineare phi: y={m1}x+{q1}, sm={sm1} e sq={sq1}')
@@ -160,7 +168,7 @@ cx2.errorbar(f_lin1, residui1, yerr=s_phi_lin, fmt='o')
 cx2.axhline(0, c='yellow', linestyle='-')
 cx2.grid(True)
 
-cx1.scatter(f_tlin, 1/np.sqrt(2), c='green', label='da A: ft=(5180+-100)Hz' )
+cx1.scatter(f_tlin, 1/np.sqrt(2), c='green', label='da A: ft=(5200+-100)Hz' )
 cx1.errorbar(f_tlin, 1/np.sqrt(2), c='green', xerr=s_ft, capsize= 5)
 cx1.scatter(f_tlin1, 0.5 , c='red', label='da phi: ft=(5500+-300)Hz' )
 cx1.errorbar(f_tlin1, 0.5, c='red', xerr=s_ft1, capsize= 5)

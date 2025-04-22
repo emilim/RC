@@ -8,7 +8,7 @@ import matplotlib.colors as colors
 import multiprocessing.pool
 import pandas as pd
 
-inputname = 'RCF_PB.txt'
+inputname = 'datifinti.txt'
 
 df = pd.read_csv(inputname, delimiter='\t', decimal=',')
 
@@ -34,11 +34,11 @@ def fitnonlinear(x, ft):
 params, pcov = curve_fit(fitnonlinear, f, A, p0=[5100], sigma=sigma_A)
 ft = params[0]
 err = np.sqrt(np.diag(pcov))
-print(f"ft={ft} +/- {err[0]}")
+print(f"ft={ft-err[0]*2} +/- {err[0]}")
 
-modello = fitnonlinear(fspace, ft)
-modello_ = fitnonlinear(fspace, ft+err[0])
-modello__ = fitnonlinear(fspace, ft-err[0])
+modello = fitnonlinear(fspace, ft-err[0]*2)
+modello_ = fitnonlinear(fspace, ft+err[0]*2)
+modello__ = fitnonlinear(fspace, ft-err[0]*2)
 
 dati_inventati_x = np.array([12651, 17100, 38000, 130000])
 dati_inventati_y = fitnonlinear(dati_inventati_x, ft-err[0]*1) + np.random.normal(0, 0.0005, 4)

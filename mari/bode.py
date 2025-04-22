@@ -23,7 +23,7 @@ v_fs = np.array(df['Scala_V'].values)
 #phi_fs = 2*np.pi*f*np.array(df['Scala_us'].values)*1e-6/(np.pi/2.)
 Vin_errL = v_fs[0]/10*0.41
 V_errL = v_fs/10*0.41
-s_A=np.sqrt((0.041*v_fs/v_in)**2+(0.04*v_fs/v_out)**2) #3% per il cambio sonda ?????
+s_A=np.sqrt((0.041*v_fs/v_in)**2+(0.041*v_fs/v_out)**2 + (3/100*v_in)**2 + (3/100*v_out)**2) #3% per il cambio sonda ?????
 #primi 6 dati e ultimi 9 fatti con due sonde
 
 v_out_bode=v_out[35:43]
@@ -34,7 +34,7 @@ print(f"freq={f_bode}")
 
 y=np.log10(v_out_bode/v_in_bode)
 y1=[-2.33674555, -2.39794001, -2.43365556, -2.51532561]#[-1.5797836,  -1.79445376, -1.89854236, -1.98871899]# -2.33674555, -2.39794001, -2.43365556, -2.51532561]
-sy=np.sqrt(np.pow((v_errL_bode/v_out_bode), 2) + np.pow((1*0.41/(10*v_in_bode)),2) + np.pow((1.2/100*v_out_bode),2))
+sy=np.sqrt(np.pow((v_errL_bode/v_out_bode), 2) + np.pow((1*0.41/(10*v_in_bode)),2) + np.pow((1.2/100*v_out_bode),2) + np.pow((1.2/100*v_in_bode),2) + np.pow((1.2/100*v_out_bode),2))
 x=np.log10(f_bode)
 x1=[6.19783169, 6.27346427, 6.33785843, 6.39392601]
 sy1=[0.02404532, 0.02751029, 0.02978035, 0.03575524]
