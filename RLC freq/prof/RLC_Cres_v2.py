@@ -105,7 +105,7 @@ NK = 20
 # Input file name
 file = 'RLC_Cres'   # seleziono per fit su C
 # file = 'RLC_Rres'   # seleziono per fit su R
-inputname = './Analisi RLC in frequenza Python/'+file+'.txt'
+inputname = file+'.txt'
 
 # Frequency limits for the fit function (in kHz)
 frfit0 = 10.0
@@ -142,7 +142,7 @@ eVin = np.sqrt((letturaV * Vdiv_in)**2 + (errscalaV * Vin)**2)
 
 # Calculate the transfer function
 TR = Vo / Vin
-eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2) ######## ??????? + 2 * (errscalaV**2))
+eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2 + 2 * (errscalaV**2))
 
 # Plot Vin and Vout vs. f e the transfer function vs. f
 

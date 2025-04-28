@@ -54,7 +54,7 @@ def fitf_C(x, A, B, C):
 
 def fitf_R(x, A, B, C):
     omega = 2.0 * np.pi * x * 1e3  # input in kHz
-    fitval = A / np.sqrt(1+C**2*(omega**2/B**2-B**2/omega**2)**2)
+    fitval = A / np.sqrt(1+C**2*(omega/B-B/omega)**2)
     return fitval
 
 def fitchi2(i,j,k):
@@ -142,7 +142,7 @@ eVin = np.sqrt((letturaV * Vdiv_in)**2 + (errscalaV * Vin)**2)
 
 # Calculate the transfer function
 TR = Vo / Vin
-eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2) ######## ??????? + 2 * (errscalaV**2))
+eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2+ 2 * (errscalaV**2))
 
 # Plot Vin and Vout vs. f e the transfer function vs. f
 
@@ -154,7 +154,7 @@ ax[0].set_ylabel(r'Voltaggio (V)')
 
 ax[1].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[1].legend(prop={'size': 10}, loc='best')
-ax[1].set_ylabel(r'Funzione di trasferimento $T_C$')
+ax[1].set_ylabel(r'Funzione di trasferimento $T_R$')
 ax[1].set_xlabel(r'Frequenza (kHz)')
 ax[1].yaxis.set_ticks_position('right')
 ax[1].yaxis.set_label_position('right')
@@ -201,7 +201,7 @@ ax[0].plot(x_fit, fitf_R(x_fit, *popt), label='Fit', linestyle='--', color='blac
 ax[0].plot(x_fit,fitf_R(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
-ax[0].set_ylabel(r'Funzione di trasferimento $T_C$')
+ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
 #ax[0].set_xticks([20,30,40,50])
 
 ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')
@@ -303,7 +303,7 @@ ax[0].plot(x_fit, fitf_R(x_fit, A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_ch
 #ax[0].plot(x_fit,fitf2(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$V_{out}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
-ax[0].set_ylabel(r'Funzione di trasferimento $T_C$')
+ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
 #ax[0].set_xticks([20,30,40,50])
 
 ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')

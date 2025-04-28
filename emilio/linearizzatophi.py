@@ -78,11 +78,11 @@ ax1.plot(x_vis, y_vis, label='Fit a un parametro: $f_t=$ {:.0f} $\pm$ {:.0f}'.fo
 
 ax1.plot(x_vis, y_vis2, label='Fit a due parametri: $f_t=$ {:.0f} $\pm$ {:.0f}'.format(f_t_2, err_f_t_2), color='red')
 
-ax1.set_xlabel(r'$\nu^2$ [Hz]')
+ax1.set_xlabel(r'$\nu$ [Hz]')
 ax1.set_ylabel(r'$\tan(\Delta\phi)$ [rad]')
 
 ax2.errorbar(f, residui, yerr=err_dphi, fmt='o', color='green', label='Residui fit a un parametro')
-ax2.errorbar(f, residui2, yerr=err_dphi, fmt='o', color='red', label='Residui fit a 2 parametri')
+ax2.errorbar(f, residui2, yerr=err_dphi, fmt='o', color='red', label='Residui fit a due parametri')
 ax2.axhline(0, c='orange', linestyle='-')
 ax2.grid(True)
 ax2.legend()
