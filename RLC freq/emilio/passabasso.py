@@ -60,6 +60,7 @@ plt.hlines(fdelta, min(f), max(f), colors='green', linestyles='--', lw=1.5)
 
 plt.show()
 
+
 plt.errorbar(f, v_in, yerr=sigma_A, fmt='o',ms=5, color='blue', label='Vin')
 plt.errorbar(f, v_out, yerr=sigma_A, fmt='o',ms=5, color='red', label='Vout')
 plt.legend()
