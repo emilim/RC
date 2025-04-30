@@ -63,8 +63,8 @@ def fitchi2(i,j,k):
     y_err = eTR
     AA,BB,CC = A_chi[i],B_chi[j],C_chi[k]
     omega = 2.0 * np.pi * x * 1e3  # input in kHz
-#    residuals = (y -  fitf_R(x,AA,BB,CC))  # Seleziono fit su R
-    residuals = (y -  fitf_C(x,AA,BB,CC))  # Seleziono fit su C
+    residuals = (y -  fitf_R(x,AA,BB,CC))  # Seleziono fit su R
+ #   residuals = (y -  fitf_C(x,AA,BB,CC))  # Seleziono fit su C
     chi2 = np.sum((residuals/y_err)**2)
     mappa[i,j,k] = chi2
 
@@ -103,8 +103,8 @@ NJ = 20
 NK = 20
 
 # Input file name
-file = 'passabasso'   # seleziono per fit su C
-# file = 'RLC_Rres'   # seleziono per fit su R
+#file = 'passabasso'   # seleziono per fit su C
+file = 'passabanda'   # seleziono per fit su R
 #inputname = './Analisi RLC in frequenza Python/'+file+'.txt'
 inputname= file+'.txt'
 
@@ -115,7 +115,7 @@ frfit1 = 100.0
 # Initial parameter values
 Ainit= 1
 Binit =  2.0 * np.pi *233000.  # Hz
-Cinit = 20. # Hz
+Cinit = 10. # Hz
 
 # Assumed reading errors
 letturaV = 0.1*0.41
@@ -126,11 +126,11 @@ errscalaV = 0.03*0.41
 df = pd.read_csv(inputname, delimiter='\t', decimal='.')
 fr = np.array(df['f_(kHz)'].values * 1e3)  # f in Hz
 Vin = np.array(df['Vin_(V)'].values)
-Vo = np.array(df['Vout_(V)'].values)
+Vo = np.array(df['Vout_(mV)'].values* 1e-3)
 A = Vo / Vin  
 #phi = 2*np.pi*fr*np.array(df['Dt_(ns)'].values[:]*1e-9)
-Vdiv_in = np.array(df['scala_Vin_(mV)'].values*10**-3)[:] #divisioni-FS del Vin
-VdivC = np.array(df['scala_Vout_(V)'].values)[:] #divisioni-FS del Vout
+Vdiv_in = np.array(df['scala_Vin_(mV)'].values*1e-3)[:] #divisioni-FS del Vin
+VdivC = np.array(df['scala_Vout_(mV)'].values*1e-3)[:] #divisioni-FS del Vout
 '''
 # Read data from the input file
 data = np.loadtxt(inputname)
@@ -182,7 +182,7 @@ plt.show()
 # Perform the fit
 
 #popt, pcov = curve_fit(fitf_C, fr, TR, p0=[Ainit, Binit, Cinit], method='lm', sigma=eTR, absolute_sigma=True)
-popt, pcov = curve_fit(fitf_C, fr, TR, p0=[Ainit, Binit, Cinit], sigma=eTR, absolute_sigma=True, maxfev=10000)
+popt, pcov = curve_fit(fitf_R, fr, TR, p0=[Ainit, Binit, Cinit], sigma=eTR, absolute_sigma=True, maxfev=10000)
 """
 POPT: Vettore con la stima dei parametri dal fit
 PCOV: Matrice delle covarianze
@@ -192,7 +192,7 @@ bounds sono i limiti inferiori e superiori dei parametri (si richiede positivit√
 perr = np.sqrt(np.diag(pcov))
 print( ' ampiezza = {a:.3f} +/- {b:.3f} \n omega0 = {c:.1f} +/- {d:.1f} kHz \n Q-valore = {e:.1f} +/- {f:.1f}'.format(a=popt[0], b=perr[0],c=popt[1]/1000,d=perr[1]/1000,e=popt[2],f=perr[2]))
 
-residuA = TR - fitf_C(fr, *popt)
+residuA = TR - fitf_R(fr, *popt)
 chisq = np.sum((residuA/eTR)**2)
 df = N - 3
 chisq_rid = chisq/df
@@ -205,8 +205,8 @@ fit tracciato con mille punti fra la freq min e max
 
 # Plot the fit
 fig, ax = plt.subplots(2, 1, figsize=(5, 4),sharex=True, constrained_layout = True, height_ratios=[2, 1])
-ax[0].plot(x_fit, fitf_C(x_fit, *popt), label='Fit', linestyle='--', color='black')
-ax[0].plot(x_fit,fitf_C(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
+ax[0].plot(x_fit, fitf_R(x_fit, *popt), label='Fit', linestyle='--', color='black')
+ax[0].plot(x_fit,fitf_R(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
 ax[0].set_ylabel(r'Funzione di trasferimento $T_C$')
@@ -298,7 +298,7 @@ argchi2_min = np.unravel_index(np.argmin(mappa),mappa.shape)
 
 # calcolo i residui della regressione utilizzando i valori dei parametri del minimo del chi2
 # ricontrollo che il minimo del chi2 sia coerente.
-residui_chi2 = TR - fitf_C(fr,A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]])
+residui_chi2 = TR - fitf_R(fr,A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]])
 
 
 chisq_res = np.sum((residui_chi2/eTR)**2)
@@ -307,7 +307,7 @@ print(chi2_min,argchi2_min, chisq_res)
 
 # Grafico nuovamente la regressione e i residui, questa volta ottenuti calcolando a mano il minimo del chi2
 fig, ax = plt.subplots(2, 1, figsize=(3, 5),sharex=True, constrained_layout = True, height_ratios=[2, 1])
-ax[0].plot(x_fit, fitf_C(x_fit, A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]]), label='Fit', linestyle='--', color='blue')
+ax[0].plot(x_fit, fitf_R(x_fit, A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]]), label='Fit', linestyle='--', color='blue')
 #ax[0].plot(x_fit,fitf2(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$V_{out}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
