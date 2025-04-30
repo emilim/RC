@@ -112,9 +112,9 @@ frfit0 = 10.0
 frfit1 = 100.0
 
 # Initial parameter values
-Ainit= 0.95
-Binit =  2.0 * np.pi *18000.  # Hz
-Cinit = 10. # Hz
+Ainit= 0.3
+Binit =  2.0 * np.pi *233000.  # Hz
+Cinit = 20. # Hz
 
 # Assumed reading errors
 letturaV = 0.1*0.41
@@ -128,9 +128,9 @@ errscalaV = 0.03*0.41
 data = np.loadtxt(inputname)
 fr = data[:, 0] #frequenze
 Vin = data[:, 1] #Vin
-Vo = data[:, 3] #Vout
+Vo = data[:, 3]*10**-3 #Vout
 Vdiv_in = data[:, 2]*10**-3 #divisioni-FS del Vin
-VdivR = data[:, 4] #divisioni-FS del Vout
+VdivR = data[:, 4]*10**-3 #divisioni-FS del Vout
 
 # Number of points to fit
 # va a contare il numero di frequenze nel vettore fr che siano maggiori di zero
