@@ -25,7 +25,7 @@ params = {'legend.fontsize': '10',
          'xtick.labelsize':'10',
          'ytick.labelsize':'10',
          'lines.linewidth': '1',
-         'text.usetex': True,
+         'text.usetex': False,
 #         'axes.formatter.limits': '-5, -3',
          'axes.formatter.min_exponent': '2',
 #         'axes.prop_cycle': cycler('color', 'bgrcmyk')

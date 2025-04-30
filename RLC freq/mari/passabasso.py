@@ -25,7 +25,7 @@ f = np.array(df['f_(kHz)'].values * 1e3)  # f in Hz
 v_in = np.array(df['Vin_(V)'].values)
 v_out = np.array(df['Vout_(V)'].values)
 A = v_out / v_in  
-phi = 2*np.pi*f*np.array(df['Dt_(ns)'].values[:]*1e-9)
+#phi = 2*np.pi*f*np.array(df['Dt_(ns)'].values[:]*1e-9)
 v_fs_in = np.array(df['scala_Vin_(mV)'].values*10**-3)[:]
 v_fs_out = np.array(df['scala_Vout_(V)'].values)[:]
 #phi_fs = 2*np.pi*f*np.array(df['scala_t_(ns)'].values[:]*1e-9)
@@ -41,17 +41,18 @@ phi_errL = 0
 f_0 = 235000
 fdelta = max(A)/np.sqrt(2)
 
-Ainit= 0.95
-Binit =  2.0 * np.pi *233000.  # Hz
-Cinit = 10. # Hz
-'''
+#Ainit= 0.95
+#Binit =  2.0 * np.pi *233000.  # Hz
+#Cinit = 10. # Hz
 
 
-popt, pcov = curve_fit(fitf_R, f, A, p0=[Ainit, Binit, Cinit], sigma=sigma_A, absolute_sigma=True)
+
+#popt, pcov = curve_fit(fitf_R, f, A, p0=[Ainit, Binit, Cinit], sigma=sigma_A, absolute_sigma=True)
+popt, pcov = curve_fit(fitf_R, f, A, sigma=sigma_A, absolute_sigma=True)
 
 perr = np.sqrt(np.diag(pcov))
 print( ' ampiezza = {a:.3f} +/- {b:.3f} \n omega0 = {c:.1f} +/- {d:.1f} kHz \n Q-valore = {e:.1f} +/- {f:.1f}'.format(a=popt[0], b=perr[0],c=popt[1]/(1000*2*np.pi),d=perr[1]/1000,e=popt[2],f=perr[2]))
-'''
+
 
 plt.errorbar(f, A, yerr=sigma_A, fmt='o',ms=5, color='blue')
 plt.xscale('log')
@@ -68,5 +69,5 @@ plt.errorbar(f, v_out, yerr=sigma_A, fmt='o',ms=5, color='red', label='Vout')
 plt.legend()
 plt.show()
 
-plt.errorbar(f, phi, yerr=sigma_A, fmt='o',ms=5, color='blue')
+#plt.errorbar(f, phi, yerr=sigma_A, fmt='o',ms=5, color='blue')
 plt.show()
