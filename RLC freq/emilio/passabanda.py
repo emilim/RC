@@ -46,15 +46,16 @@ Binit =  2.0 * np.pi *233000.  # Hz
 Cinit = 10. # Hz
 
 popt, pcov = curve_fit(fitf_R, f, A, p0=[Ainit, Binit, Cinit], sigma=sigma_A, absolute_sigma=True)
-
+ampiezza, f0_stima, Qvalue = popt
+f0_stima = f0_stima / (2.0 * np.pi)
 perr = np.sqrt(np.diag(pcov))
-print( ' ampiezza = {a:.3f} +/- {b:.3f} \n omega0 = {c:.1f} +/- {d:.1f} kHz \n Q-valore = {e:.1f} +/- {f:.1f}'.format(a=popt[0], b=perr[0],c=popt[1]/(1000*2*np.pi),d=perr[1]/1000,e=popt[2],f=perr[2]))
+print( ' ampiezza = {a:.3f} +/- {b:.3f} \n f_0 = {c:.1f} +/- {d:.1f} kHz \n Q-valore = {e:.1f} +/- {f:.1f}'.format(a=ampiezza, b=perr[0],c=f0_stima/(1000),d=perr[1]/1000,e=Qvalue,f=perr[2]))
 
 plt.xscale('log')
 plt.yscale('log')
 plt.errorbar(f, A, yerr=sigma_A, fmt='o',ms=5, color='blue')
 plt.plot(f, fitf_R(f, *popt), color='red', lw=1.5, label='fit')
-plt.vlines(f_0, 0, max(A), colors='red', linestyles='--', lw=1.5)
+plt.vlines(f0_stima, 0, max(A), colors='red', linestyles='--', lw=1.5)
 plt.hlines(fdelta, min(f), max(f), colors='green', linestyles='--', lw=1.5)
 #plt.errorbar(f, phi, yerr=phi_errL, fmt='o',ms=2,color='green')
 
@@ -65,5 +66,24 @@ plt.errorbar(f, v_out, yerr=sigma_A, fmt='o',ms=5, color='red', label='Vout')
 plt.legend()
 plt.show()
 
+def fitphi_R(x, B, C):
+    omega = 2.0 * np.pi * x 
+    fitval = np.arctan(C*(-B/omega + omega/B))
+    return fitval
+
+poptphi, pcovphi = curve_fit(fitphi_R, f, phi, p0=[Binit, Cinit], sigma=sigma_A, absolute_sigma=True)
+
+
+perrphi = np.sqrt(np.diag(pcovphi))
+
+f0phi = poptphi[0] / (2.0 * np.pi)
+err_f0phi = perrphi[0]
+Qvaluephi = poptphi[1]
+err_Qvaluephi = perrphi[1]
+print(" ")
+print( ' f0 = {a:.3f} +/- {b:.3f} kHz \n Q-valore = {c:.1f} +/- {d:.2f}'.format(a=f0phi/1000, b=err_f0phi/1000,c=Qvaluephi,d=err_Qvaluephi))
+
+
 plt.errorbar(f, phi, yerr=sigma_A, fmt='o',ms=5, color='blue')
+plt.plot(f, fitphi_R(f, *poptphi), color='red', lw=1.5, label='fit')
 plt.show()
