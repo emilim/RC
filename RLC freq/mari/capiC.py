@@ -106,7 +106,7 @@ NK = 20
 file = 'passabasso'   # seleziono per fit su C
 # file = 'RLC_Rres'   # seleziono per fit su R
 #inputname = './Analisi RLC in frequenza Python/'+file+'.txt'
-inputname= './'+file+'.txt'
+inputname= file+'.txt'
 
 # Frequency limits for the fit function (in kHz)
 frfit0 = 10.0
