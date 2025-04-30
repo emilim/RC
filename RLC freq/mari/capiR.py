@@ -6,11 +6,12 @@ import mplhep as hep
 from cycler import cycler
 import matplotlib.colors as colors
 import multiprocessing.pool
-import pandas as pd
+
 
 # settaggio globale grafici    
 #print(plt.style.available)
 #plt.style.use('classic')
+'''
 plt.style.use(hep.style.ROOT)
 params = {'legend.fontsize': '10',
          'legend.loc': 'upper right',
@@ -39,7 +40,7 @@ params = {'legend.fontsize': '10',
           }
 plt.rcParams.update(params)
 plt.rcParams['axes.prop_cycle'] = cycler(color=['b','g','r','c','m','y','k'])
-
+'''
 # Enable debug mode
 DEB = False
 
@@ -48,13 +49,13 @@ DEB = False
 
 
 def fitf_C(x, A, B, C):
-    omega = 2.0 * np.pi * x # input in kHz
+    omega = 2.0 * np.pi * x * 1e3  # input in kHz
     fitval = A / np.sqrt((1-omega**2/B**2)**2+1/C**2*omega**2/B**2)
     return fitval
 
 def fitf_R(x, A, B, C):
     omega = 2.0 * np.pi * x * 1e3  # input in kHz
-    fitval = A / np.sqrt(1+C**2*(omega**2/B**2-B**2/omega**2)**2)
+    fitval = A / np.sqrt(1+C**2*(omega/B-B/omega)**2)
     return fitval
 
 def fitchi2(i,j,k):
@@ -64,7 +65,7 @@ def fitchi2(i,j,k):
     AA,BB,CC = A_chi[i],B_chi[j],C_chi[k]
     omega = 2.0 * np.pi * x * 1e3  # input in kHz
     residuals = (y -  fitf_R(x,AA,BB,CC))  # Seleziono fit su R
- #   residuals = (y -  fitf_C(x,AA,BB,CC))  # Seleziono fit su C
+#    residuals = (y -  fitf_C(x,AA,BB,CC))  # Seleziono fit su C
     chi2 = np.sum((residuals/y_err)**2)
     mappa[i,j,k] = chi2
 
@@ -103,19 +104,18 @@ NJ = 20
 NK = 20
 
 # Input file name
-#file = 'passabasso'   # seleziono per fit su C
-file = 'passabanda'   # seleziono per fit su R
-#inputname = './Analisi RLC in frequenza Python/'+file+'.txt'
-inputname= file+'.txt'
+# file = 'RLC_Cres'   # seleziono per fit su C
+file = 'RLC_Rres'   # seleziono per fit su R
+inputname = file+'.txt'
 
 # Frequency limits for the fit function (in kHz)
 frfit0 = 10.0
 frfit1 = 100.0
 
 # Initial parameter values
-Ainit= 1
+Ainit= 0.3
 Binit =  2.0 * np.pi *233000.  # Hz
-Cinit = 10. # Hz
+Cinit = 20. # Hz
 
 # Assumed reading errors
 letturaV = 0.1*0.41
@@ -123,34 +123,27 @@ errscalaV = 0.03*0.41
 
 
 #### LOAD DATA
-df = pd.read_csv(inputname, delimiter='\t', decimal='.')
-fr = np.array(df['f_(kHz)'].values * 1e3)  # f in Hz
-Vin = np.array(df['Vin_(V)'].values)
-Vo = np.array(df['Vout_(mV)'].values* 1e-3)
-A = Vo / Vin  
-#phi = 2*np.pi*fr*np.array(df['Dt_(ns)'].values[:]*1e-9)
-Vdiv_in = np.array(df['scala_Vin_(mV)'].values*1e-3)[:] #divisioni-FS del Vin
-VdivC = np.array(df['scala_Vout_(mV)'].values*1e-3)[:] #divisioni-FS del Vout
-'''
+    
+
 # Read data from the input file
 data = np.loadtxt(inputname)
 fr = data[:, 0] #frequenze
 Vin = data[:, 1] #Vin
-Vo = data[:, 2] #Vout
-Vdiv_in = data[:, 3] #divisioni-FS del Vin
-VdivC = data[:, 4] #divisioni-FS del Vout
-'''
+Vo = data[:, 3]*10**-3 #Vout
+Vdiv_in = data[:, 2]*10**-3 #divisioni-FS del Vin
+VdivR = data[:, 4]*10**-3 #divisioni-FS del Vout
+
 # Number of points to fit
 # va a contare il numero di frequenze nel vettore fr che siano maggiori di zero
 N = len(fr[fr > 0])
 
 # Calculate errors on x and y
-eVo = np.sqrt((letturaV * VdivC)**2 + (errscalaV * Vo)**2)
+eVo = np.sqrt((letturaV * VdivR)**2 + (errscalaV * Vo)**2)
 eVin = np.sqrt((letturaV * Vdiv_in)**2 + (errscalaV * Vin)**2)
 
 # Calculate the transfer function
 TR = Vo / Vin
-eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2) 
+eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2+ 2 * (errscalaV**2))
 
 # Plot Vin and Vout vs. f e the transfer function vs. f
 
@@ -162,7 +155,7 @@ ax[0].set_ylabel(r'Voltaggio (V)')
 
 ax[1].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[1].legend(prop={'size': 10}, loc='best')
-ax[1].set_ylabel(r'Funzione di trasferimento $T_C$')
+ax[1].set_ylabel(r'Funzione di trasferimento $T_R$')
 ax[1].set_xlabel(r'Frequenza (kHz)')
 ax[1].yaxis.set_ticks_position('right')
 ax[1].yaxis.set_label_position('right')
@@ -181,8 +174,8 @@ plt.show()
 
 # Perform the fit
 
-#popt, pcov = curve_fit(fitf_C, fr, TR, p0=[Ainit, Binit, Cinit], method='lm', sigma=eTR, absolute_sigma=True)
-popt, pcov = curve_fit(fitf_R, fr, TR, p0=[Ainit, Binit, Cinit], sigma=eTR, absolute_sigma=True, maxfev=10000)
+popt, pcov = curve_fit(fitf_R, fr, TR, p0=[Ainit, Binit, Cinit], method='lm', sigma=eTR, absolute_sigma=True)
+
 """
 POPT: Vettore con la stima dei parametri dal fit
 PCOV: Matrice delle covarianze
@@ -209,7 +202,7 @@ ax[0].plot(x_fit, fitf_R(x_fit, *popt), label='Fit', linestyle='--', color='blac
 ax[0].plot(x_fit,fitf_R(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
-ax[0].set_ylabel(r'Funzione di trasferimento $T_C$')
+ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
 #ax[0].set_xticks([20,30,40,50])
 
 ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')
@@ -311,7 +304,7 @@ ax[0].plot(x_fit, fitf_R(x_fit, A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_ch
 #ax[0].plot(x_fit,fitf2(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$V_{out}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
-ax[0].set_ylabel(r'Funzione di trasferimento $T_C$')
+ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
 #ax[0].set_xticks([20,30,40,50])
 
 ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')
@@ -440,3 +433,6 @@ plt.savefig(file+'_4'+'.png',
             dpi = 100)
 
 plt.show()
+
+
+
