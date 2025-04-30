@@ -8,45 +8,6 @@ import matplotlib.colors as colors
 import multiprocessing.pool
 
 
-# settaggio globale grafici    
-#print(plt.style.available)
-#plt.style.use('classic')
-plt.style.use(hep.style.ROOT)
-params = {'legend.fontsize': '10',
-         'legend.loc': 'upper right',
-          'legend.frameon':       'True',
-          'legend.framealpha':    '0.8',      # legend patch transparency
-          'legend.facecolor':     'w', # inherit from axes.facecolor; or color spec
-          'legend.edgecolor':     'w',      # background patch boundary color
-          'figure.figsize': (6, 4),
-         'axes.labelsize': '10',
-         'figure.titlesize' : '14',
-         'axes.titlesize':'12',
-         'xtick.labelsize':'10',
-         'ytick.labelsize':'10',
-         'lines.linewidth': '1',
-         'text.usetex': True,
-#         'axes.formatter.limits': '-5, -3',
-         'axes.formatter.min_exponent': '2',
-#         'axes.prop_cycle': cycler('color', 'bgrcmyk')
-         'figure.subplot.left':'0.125',
-         'figure.subplot.bottom':'0.125',
-         'figure.subplot.right':'0.925',
-         'figure.subplot.top':'0.925',
-         'figure.subplot.wspace':'0.1',
-         'figure.subplot.hspace':'0.1',
-         'figure.constrained_layout.use' : True
-          }
-plt.rcParams.update(params)
-plt.rcParams['axes.prop_cycle'] = cycler(color=['b','g','r','c','m','y','k'])
-
-# Enable debug mode
-DEB = False
-
-
-# Function definition
-
-
 def fitf_C(x, A, B, C):
     omega = 2.0 * np.pi * x * 1e3  # input in kHz
     fitval = A / np.sqrt((1-omega**2/B**2)**2+1/C**2*omega**2/B**2)
@@ -184,7 +145,7 @@ bounds sono i limiti inferiori e superiori dei parametri (si richiede positivit√
 perr = np.sqrt(np.diag(pcov))
 print( ' ampiezza = {a:.3f} +/- {b:.3f} \n omega0 = {c:.1f} +/- {d:.1f} kHz \n Q-valore = {e:.1f} +/- {f:.1f}'.format(a=popt[0], b=perr[0],c=popt[1]/1000,d=perr[1]/1000,e=popt[2],f=perr[2]))
 
-residuA = TR - fitf_C(fr, *popt)
+residuA = TR - fitf_R(fr, *popt)
 chisq = np.sum((residuA/eTR)**2)
 df = N - 3
 chisq_rid = chisq/df
@@ -290,7 +251,7 @@ argchi2_min = np.unravel_index(np.argmin(mappa),mappa.shape)
 
 # calcolo i residui della regressione utilizzando i valori dei parametri del minimo del chi2
 # ricontrollo che il minimo del chi2 sia coerente.
-residui_chi2 = TR - fitf_C(fr,A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]])
+residui_chi2 = TR - fitf_R(fr,A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]])
 
 
 chisq_res = np.sum((residui_chi2/eTR)**2)
