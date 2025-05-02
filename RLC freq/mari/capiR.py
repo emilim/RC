@@ -114,7 +114,7 @@ frfit1 = 100.0
 
 # Initial parameter values
 Ainit= 0.3
-Binit =  2.0 * np.pi *233000.  # Hz
+Binit =  2.0 * np.pi *235000.  # Hz
 Cinit = 20. # Hz
 
 # Assumed reading errors
@@ -144,7 +144,7 @@ eVin = np.sqrt((letturaV * Vdiv_in)**2 + (errscalaV * Vin)**2)
 # Calculate the transfer function
 TR = Vo / Vin
 eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2+ 2 * (errscalaV**2))
-
+print('eTR',eTR)
 # Plot Vin and Vout vs. f e the transfer function vs. f
 
 fig, ax = plt.subplots(1, 2, figsize=(6, 4),sharex=True, constrained_layout = True, width_ratios=[1, 1])
