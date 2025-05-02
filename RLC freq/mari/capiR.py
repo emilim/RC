@@ -105,7 +105,7 @@ NK = 20
 
 # Input file name
 # file = 'RLC_Cres'   # seleziono per fit su C
-file = 'RLC_Rres'   # seleziono per fit su R
+file = 'capiRes'   # seleziono per fit su R
 inputname = file+'.txt'
 
 # Frequency limits for the fit function (in kHz)
@@ -147,19 +147,22 @@ eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2+ 2 * (errscalaV**2))
 
 # Plot Vin and Vout vs. f e the transfer function vs. f
 
-fig, ax = plt.subplots(1, 2, figsize=(5, 4),sharex=True, constrained_layout = True, width_ratios=[1, 1])
+fig, ax = plt.subplots(1, 2, figsize=(6, 4),sharex=True, constrained_layout = True, width_ratios=[1, 1])
 ax[0].errorbar(fr,Vin,yerr=eVin, fmt='o', label=r'$V_{in}$',ms=2)
 ax[0].errorbar(fr,Vo,yerr=eVo, fmt='o', label=r'$V_{out}$',ms=2)
 ax[0].legend(prop={'size': 10}, loc='best')
 ax[0].set_ylabel(r'Voltaggio (V)')
-
+ax[0].grid(True)
 ax[1].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[1].legend(prop={'size': 10}, loc='best')
 ax[1].set_ylabel(r'Funzione di trasferimento $T_R$')
 ax[1].set_xlabel(r'Frequenza (kHz)')
 ax[1].yaxis.set_ticks_position('right')
 ax[1].yaxis.set_label_position('right')
+ax[1].axhline(y=np.max(TR)/np.sqrt(2), color='orange', linestyle='--', label=r'$T=\frac{T_{max}}{\sqrt{2}}$')
+ax[1].legend(prop={'size': 10}, loc='best')
 
+plt.grid(True)
 plt.savefig(file+'_1'+'.png',
             bbox_inches ="tight",
             pad_inches = 1,
@@ -171,7 +174,7 @@ plt.savefig(file+'_1'+'.png',
 
 plt.show()
 
-
+# Select the data for the fit
 # Perform the fit
 
 popt, pcov = curve_fit(fitf_R, fr, TR, p0=[Ainit, Binit, Cinit], method='lm', sigma=eTR, absolute_sigma=True)
@@ -203,13 +206,14 @@ ax[0].plot(x_fit,fitf_R(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle=
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
 ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
+ax[0].grid(True)
 #ax[0].set_xticks([20,30,40,50])
 
 ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')
 ax[1].set_ylabel(r'Residui')
 ax[1].set_xlabel(r'Frequenza (kHz)')
 ax[1].plot(fr,np.zeros(len(fr)),color='black')
-
+ax[1].grid(True)
 plt.savefig(file+'_2'+'.png',
             bbox_inches ="tight",
             pad_inches = 1,
@@ -305,13 +309,14 @@ ax[0].plot(x_fit, fitf_R(x_fit, A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_ch
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$V_{out}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
 ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
+ax[0].grid(True)
 #ax[0].set_xticks([20,30,40,50])
 
 ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')
 ax[1].set_ylabel(r'Residui')
 ax[1].set_xlabel(r'Frequenza (kHz)')
 ax[1].plot(fr,np.zeros(N))
-
+ax[1].grid(True)
 plt.savefig(file+'_3'+'.png',
             bbox_inches ="tight",
             pad_inches = 1,
