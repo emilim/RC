@@ -111,6 +111,7 @@ fig, ax = plt.subplots(1, 2, figsize=(5, 4),sharex=True, constrained_layout = Tr
 ax[0].errorbar(fr,Vin,yerr=eVin, fmt='o', label=r'$V_{in}$',ms=2)
 ax[0].errorbar(fr,Vo,yerr=eVo, fmt='o', label=r'$V_{out}$',ms=2)
 ax[0].legend(prop={'size': 10}, loc='best')
+ax[0].set_xlabel(r'Frequenza (kHz)')
 ax[0].set_ylabel(r'Voltaggio (V)')
 
 ax[1].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
