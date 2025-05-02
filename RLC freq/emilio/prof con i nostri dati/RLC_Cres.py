@@ -8,45 +8,6 @@ import matplotlib.colors as colors
 import multiprocessing.pool
 
 
-# settaggio globale grafici    
-#print(plt.style.available)
-#plt.style.use('classic')
-plt.style.use(hep.style.ROOT)
-params = {'legend.fontsize': '10',
-         'legend.loc': 'upper right',
-          'legend.frameon':       'True',
-          'legend.framealpha':    '0.8',      # legend patch transparency
-          'legend.facecolor':     'w', # inherit from axes.facecolor; or color spec
-          'legend.edgecolor':     'w',      # background patch boundary color
-          'figure.figsize': (6, 4),
-         'axes.labelsize': '10',
-         'figure.titlesize' : '14',
-         'axes.titlesize':'12',
-         'xtick.labelsize':'10',
-         'ytick.labelsize':'10',
-         'lines.linewidth': '1',
-         'text.usetex': True,
-#         'axes.formatter.limits': '-5, -3',
-         'axes.formatter.min_exponent': '2',
-#         'axes.prop_cycle': cycler('color', 'bgrcmyk')
-         'figure.subplot.left':'0.125',
-         'figure.subplot.bottom':'0.125',
-         'figure.subplot.right':'0.925',
-         'figure.subplot.top':'0.925',
-         'figure.subplot.wspace':'0.1',
-         'figure.subplot.hspace':'0.1',
-         'figure.constrained_layout.use' : True
-          }
-plt.rcParams.update(params)
-plt.rcParams['axes.prop_cycle'] = cycler(color=['b','g','r','c','m','y','k'])
-
-# Enable debug mode
-DEB = False
-
-
-# Function definition
-
-
 def fitf_C(x, A, B, C):
     omega = 2.0 * np.pi * x * 1e3  # input in kHz
     fitval = A / np.sqrt((1-omega**2/B**2)**2+1/C**2*omega**2/B**2)
@@ -150,6 +111,7 @@ fig, ax = plt.subplots(1, 2, figsize=(5, 4),sharex=True, constrained_layout = Tr
 ax[0].errorbar(fr,Vin,yerr=eVin, fmt='o', label=r'$V_{in}$',ms=2)
 ax[0].errorbar(fr,Vo,yerr=eVo, fmt='o', label=r'$V_{out}$',ms=2)
 ax[0].legend(prop={'size': 10}, loc='best')
+ax[0].set_xlabel(r'Frequenza (kHz)')
 ax[0].set_ylabel(r'Voltaggio (V)')
 
 ax[1].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')

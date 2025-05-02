@@ -37,9 +37,10 @@ eVo = np.sqrt((letturaV * v_fs_out)**2 + (errscalaV * v_out)**2)
 eVin = np.sqrt((letturaV * v_fs_in)**2 + (errscalaV * v_in)**2)
 
 sigma_A = A * np.sqrt((eVo / v_out)**2 + (eVin / v_in)**2)
-phi_errL = 0
+sigma_phi = phi_fs/10*0.41*np.sqrt(2)
 f_0 = 235000
 fdelta = max(A)/np.sqrt(2)
+
 
 Ainit= 0.95
 Binit =  2.0 * np.pi *233000.  # Hz
@@ -51,14 +52,18 @@ f0_stima = f0_stima / (2.0 * np.pi)
 perr = np.sqrt(np.diag(pcov))
 print( ' ampiezza = {a:.3f} +/- {b:.3f} \n f_0 = {c:.1f} +/- {d:.1f} kHz \n Q-valore = {e:.1f} +/- {f:.1f}'.format(a=ampiezza, b=perr[0],c=f0_stima/(1000),d=perr[1]/1000,e=Qvalue,f=perr[2]))
 
-plt.xscale('log')
-plt.yscale('log')
-plt.errorbar(f, A, yerr=sigma_A, fmt='o',ms=5, color='blue')
-plt.plot(f, fitf_R(f, *popt), color='red', lw=1.5, label='fit')
-plt.vlines(f0_stima, 0, max(A), colors='red', linestyles='--', lw=1.5)
-plt.hlines(fdelta, min(f), max(f), colors='green', linestyles='--', lw=1.5)
+fig, ax = plt.subplots(2, 1, figsize=(5, 4),sharex=True, constrained_layout = True, height_ratios=[2, 1])
+#plt.xscale('log')
+#plt.yscale('log')
+ax[0].errorbar(f, A, yerr=sigma_A, fmt='o',ms=5, color='blue')
+ax[0].plot(f, fitf_R(f, *popt), color='red', lw=1.5, label='fit')
+ax[0].vlines(f0_stima, 0, max(A), colors='red', linestyles='--', lw=1.5)
+ax[0].hlines(fdelta, min(f), max(f), colors='green', linestyles='--', lw=1.5)
 #plt.errorbar(f, phi, yerr=phi_errL, fmt='o',ms=2,color='green')
 
+
+residui = A - fitf_R(f, *popt)
+ax[1].errorbar(f, residui, yerr=sigma_A, fmt='o',ms=5, color='blue')
 plt.show()
 
 plt.errorbar(f, v_in, yerr=sigma_A, fmt='o',ms=5, color='blue', label='Vin')
@@ -71,7 +76,13 @@ def fitphi_R(x, B, C):
     fitval = np.arctan(C*(-B/omega + omega/B))
     return fitval
 
-poptphi, pcovphi = curve_fit(fitphi_R, f, phi, p0=[Binit, Cinit], sigma=sigma_A, absolute_sigma=True)
+inizio = 13
+fine = 44
+phi = phi[inizio:fine]
+f = f[inizio:fine]
+sigma_phi = sigma_phi[inizio:fine]
+
+poptphi, pcovphi = curve_fit(fitphi_R, f, phi, p0=[Binit, Cinit], sigma=sigma_phi, absolute_sigma=True)
 
 
 perrphi = np.sqrt(np.diag(pcovphi))
@@ -80,10 +91,24 @@ f0phi = poptphi[0] / (2.0 * np.pi)
 err_f0phi = perrphi[0]
 Qvaluephi = poptphi[1]
 err_Qvaluephi = perrphi[1]
+chiquadro = np.sum(((phi - fitphi_R(f, *poptphi)) / sigma_phi) ** 2)
+ndof = len(f) - len(poptphi)
+chiquadrored = chiquadro / ndof
 print(" ")
 print( ' f0 = {a:.3f} +/- {b:.3f} kHz \n Q-valore = {c:.1f} +/- {d:.2f}'.format(a=f0phi/1000, b=err_f0phi/1000,c=Qvaluephi,d=err_Qvaluephi))
+print("chi-quadro = ", chiquadro)
+print("ndof = ", ndof)
+print("chi-quadro ridotto = ", chiquadrored)
+f_fit = np.linspace(min(f), max(f), 1000)
+fig, ax = plt.subplots(2, 1, figsize=(5, 4),sharex=True, constrained_layout = True, height_ratios=[2, 1])
 
+ax[0].errorbar(f, phi, yerr=sigma_phi, fmt='o',ms=5, color='blue')
+ax[0].plot(f_fit, fitphi_R(f_fit, *poptphi), color='red', lw=1.5, label='fit')
+ax[0].set_xlabel('Frequenza [Hz]')
+ax[0].set_ylabel('Fase [rad]')
 
-plt.errorbar(f, phi, yerr=sigma_A, fmt='o',ms=5, color='blue')
-plt.plot(f, fitphi_R(f, *poptphi), color='red', lw=1.5, label='fit')
+ax[1].errorbar(f, phi - fitphi_R(f, *poptphi), yerr=sigma_phi, fmt='o',ms=5, color='blue')
+ax[1].hlines(0, min(f), max(f), colors='red', linestyles='--', lw=1.5)
+ax[1].set_xlabel('Frequenza [Hz]')
+ax[1].set_ylabel('Residui [rad]')
 plt.show()
