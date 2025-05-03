@@ -146,7 +146,7 @@ plt.show()
 Ainit=0.3157
 Binit=2.0 * np.pi *234990.
 #Binit=2 * np.pi*235000
-Cinit=21
+Cinit=20.8
 popt=[Ainit,Binit,Cinit]
 pcov=[0.0031, 2000, 1]
 residuA = TR - fitf_R(fr, Ainit,Binit,Cinit)
@@ -210,7 +210,7 @@ su ogni parametro (sempre considerando l'errore di scipy)
 """
 
 # Define the interval for parameter limits
-NSI = 2 # numero di sigma rispetto all'errore di scipy
+NSI = 1 # numero di sigma rispetto all'errore di scipy
 A0, A1 = A_BF - NSI * eA_BF, A_BF + NSI * eA_BF # estremi di scansione del parametro A
 B0, B1 = B_BF - NSI * eB_BF, B_BF + NSI * eB_BF # estremi di scansione del parametro B
 C0, C1 = C_BF - NSI * eC_BF, C_BF + NSI * eC_BF # estremi di scansione del parametro C
