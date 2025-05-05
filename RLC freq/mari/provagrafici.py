@@ -15,9 +15,9 @@ def fitf_C(x, A, B, C):
     fitval = A / np.sqrt((1-omega**2/B**2)**2+1/C**2*omega**2/B**2)
     return fitval
 
-def fitf_R(x, A, B, C):
+def fitf_R(x, B, C):
     omega = 2.0 * np.pi * x * 1e3  # input in kHz
-    fitval = A / np.sqrt(1+C**2*(omega/B-B/omega)**2)
+    fitval = 0.322 / np.sqrt(1+C**2*(omega/B-B/omega)**2)
     return fitval
 
 def fitchi2(i,j,k):
@@ -75,7 +75,7 @@ NK = 20
 
 # Input file name
 # file = 'RLC_Cres'   # seleziono per fit su C
-file = 'capiRes'   # seleziono per fit su R
+file = 'passabanda'   # seleziono per fit su R
 inputname = file+'.txt'
 
 # Frequency limits for the fit function (in kHz)
@@ -110,7 +110,7 @@ eVin = np.sqrt((letturaV * Vdiv_in)**2 + (errscalaV * Vin)**2)
 # Calculate the transfer function
 TR = Vo / Vin
 eTR = TR * np.sqrt((eVo / Vo)**2 + (eVin / Vin)**2+ 2 * (errscalaV**2))
-
+print('eTR',eTR)
 # Plot Vin and Vout vs. f e the transfer function vs. f
 
 fig, ax = plt.subplots(1, 2, figsize=(6, 4),sharex=True, constrained_layout = True, width_ratios=[1, 1])
@@ -143,14 +143,18 @@ plt.savefig(file+'_1'+'.png',
             dpi = 100)
 
 plt.show()
-Ainit=0.3157
-Binit=2.0 * np.pi *234990.
-#Binit=2 * np.pi*235000
-Cinit=20.8
-popt=[Ainit,Binit,Cinit]
-pcov=[0.0031, 2000, 1]
-residuA = TR - fitf_R(fr, Ainit,Binit,Cinit)
+#Ainit=0.3157
+#Binit=2.0 * np.pi *234990.
+#Cinit=20.8
+#popt=[Ainit,Binit,Cinit]
+#pcov=[0.0031, 3600, 1]
+Binit=2.0 * np.pi * 234990
+Cinit=21.6
+popt=[ 2.0 * np.pi * 234990, 20.8]
+pcov=[ 3600, 0.9]
+residuA = TR - fitf_R(fr, *popt)
 chisq = np.sum((residuA/eTR)**2)
+print('chi con nostri parametri',chisq)
 df = N - 3
 chisq_rid = chisq/df
 
@@ -163,7 +167,7 @@ fit tracciato con mille punti fra la freq min e max
 # Plot the fit
 fig, ax = plt.subplots(2, 1, figsize=(5, 4),sharex=True, constrained_layout = True, height_ratios=[2, 1])
 ax[0].plot(x_fit, fitf_R(x_fit, *popt), label='Fit', linestyle='--', color='black')
-ax[0].plot(x_fit,fitf_R(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
+ax[0].plot(x_fit,fitf_R(x_fit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
 ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
@@ -262,20 +266,23 @@ chisq_res = np.sum((residui_chi2/eTR)**2)
 
 print(chi2_min,argchi2_min, chisq_res)
 
+
 # Grafico nuovamente la regressione e i residui, questa volta ottenuti calcolando a mano il minimo del chi2
-fig, ax = plt.subplots(2, 1, figsize=(3, 5),sharex=True, constrained_layout = True, height_ratios=[2, 1])
-ax[0].plot(x_fit, fitf_R(x_fit, A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]]), label='Fit', linestyle='--', color='blue')
+fig, ax = plt.subplots(2, 1, figsize=(5, 5),sharex=True, constrained_layout = True, height_ratios=[4, 1])
+ax[0].plot(x_fit, fitf_R(x_fit, A_chi[argchi2_min[0]],B_chi[argchi2_min[1]],C_chi[argchi2_min[2]]), label='Fit minimo chi^2', linestyle='--', color='blue')
+ax[0].plot(x_fit, fitf_R(x_fit, A_BF,B_BF,C_BF), label='Fit parametri puntuali', linestyle='dashed', color='limegreen')
 #ax[0].plot(x_fit,fitf2(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$V_{out}$',ms=2,color='red')
-ax[0].legend(loc='upper left')
+ax[0].legend(loc='best')
 ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
 ax[0].grid(True)
 #ax[0].set_xticks([20,30,40,50])
 
-ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')
+ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='blue')
+ax[1].errorbar(fr,residui_chi2,yerr=eTR, fmt='o', label=r'Residui chi^2',ms=2,color='limegreen')
 ax[1].set_ylabel(r'Residui')
 ax[1].set_xlabel(r'Frequenza (kHz)')
-ax[1].plot(fr,np.zeros(N))
+ax[1].plot(fr,np.zeros(N), c='red')
 ax[1].grid(True)
 plt.savefig(file+'_3'+'.png',
             bbox_inches ="tight",

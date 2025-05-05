@@ -105,7 +105,7 @@ NK = 20
 
 # Input file name
 # file = 'RLC_Cres'   # seleziono per fit su C
-file = 'capiRes'   # seleziono per fit su R
+file = 'passabanda'   # seleziono per fit su R
 inputname = file+'.txt'
 
 # Frequency limits for the fit function (in kHz)
@@ -113,9 +113,9 @@ frfit0 = 10.0
 frfit1 = 100.0
 
 # Initial parameter values
-Ainit= 0.3
-Binit =  2.0 * np.pi *235000.  # Hz
-Cinit = 20. # Hz
+Ainit= 0.322
+Binit =  2.0 * np.pi *234990.  # Hz
+Cinit = 21.6 # Hz
 
 # Assumed reading errors
 letturaV = 0.1*0.41
@@ -189,7 +189,11 @@ perr = np.sqrt(np.diag(pcov))
 print( ' ampiezza = {a:.3f} +/- {b:.3f} \n omega0 = {c:.1f} +/- {d:.1f} kHz \n Q-valore = {e:.1f} +/- {f:.1f}'.format(a=popt[0], b=perr[0],c=popt[1]/1000,d=perr[1]/1000,e=popt[2],f=perr[2]))
 
 residuA = TR - fitf_R(fr, *popt)
+residui_grezzi=TR-fitf_R(fr, Ainit, Binit, Cinit)
+chi_grezzo=np.sum((residui_grezzi/eTR)**2)
+print('chi_grezzo',chi_grezzo)
 chisq = np.sum((residuA/eTR)**2)
+print('chisq',chisq)
 df = N - 3
 chisq_rid = chisq/df
 
@@ -201,19 +205,21 @@ fit tracciato con mille punti fra la freq min e max
 
 # Plot the fit
 fig, ax = plt.subplots(2, 1, figsize=(5, 4),sharex=True, constrained_layout = True, height_ratios=[2, 1])
-ax[0].plot(x_fit, fitf_R(x_fit, *popt), label='Fit', linestyle='--', color='black')
-ax[0].plot(x_fit,fitf_R(x_fit,Ainit,Binit,Cinit), label='init guess', linestyle='dashed', color='green')
+ax[0].plot(x_fit, fitf_R(x_fit, *popt), label='Best Fit', linestyle='--', color='blue')
+ax[0].plot(x_fit,fitf_R(x_fit,Ainit,Binit,Cinit), label='parametri iniziali', linestyle='dashed', color='limegreen')
 ax[0].errorbar(fr,TR,yerr=eTR, fmt='o', label=r'$T=\frac{V_{out}}{V{in}}$',ms=2,color='red')
 ax[0].legend(loc='upper left')
 ax[0].set_ylabel(r'Funzione di trasferimento $T_R$')
 ax[0].grid(True)
 #ax[0].set_xticks([20,30,40,50])
 
-ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui$',ms=2,color='red')
+ax[1].errorbar(fr,residuA,yerr=eTR, fmt='o', label=r'Residui',ms=2,color='blue')
+ax[1].errorbar(fr,residui_grezzi,yerr=eTR, fmt='o', label=r'Residui fit iniziale',ms=2,color='limegreen')
 ax[1].set_ylabel(r'Residui')
 ax[1].set_xlabel(r'Frequenza (kHz)')
 ax[1].plot(fr,np.zeros(len(fr)),color='black')
 ax[1].grid(True)
+ax[1].legend(loc='upper right')
 plt.savefig(file+'_2'+'.png',
             bbox_inches ="tight",
             pad_inches = 1,
